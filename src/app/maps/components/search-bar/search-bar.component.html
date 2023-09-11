@@ -2,7 +2,9 @@
   <input
   type="text"
   class="form-control"
-  placeholder="Buscar Lugar...">
+  placeholder="Buscar Lugar..."
+  #txtQuery
+  (keyup)="onQueryChanged(txtQuery.value)">
 
   <app-search-results></app-search-results>
 </div>
