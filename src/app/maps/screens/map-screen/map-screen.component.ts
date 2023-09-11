@@ -6,11 +6,13 @@ import { PlacesService } from '../../services/places.service';
   templateUrl: './map-screen.component.html',
   styleUrls: ['./map-screen.component.css']
 })
-export class MapScreenComponent implements OnInit {
+export class MapScreenComponent  {
 
   private placesServices=inject(PlacesService)
-  ngOnInit(): void {
-    throw new Error('Method not implemented.');
+
+  get isUserLocationReady(){
+    return this.placesServices.isUserLocationReady;
   }
+
 
 }
