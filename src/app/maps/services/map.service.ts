@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { LngLatBounds, LngLatLike, Map, Marker, Popup } from 'mapbox-gl';
+import { AnySourceData, LngLatBounds, LngLatLike, Map, Marker, Popup } from 'mapbox-gl';
 import { Feature } from '../interfaces/places';
 import { DirectionsApiClient } from '../api/directionsApiClient';
 import { DirectionsResponse, Route } from '../interfaces/directions';
@@ -81,6 +81,42 @@ export class MapService {
 
     this.map?.fitBounds(bounds,{
       padding:200
+    })
+    const sourceData:AnySourceData={
+      type:'geojson',
+      data:{
+        type:'FeatureCollection',
+        features:[
+          {
+            type:'Feature',
+            properties:{},
+            geometry:{
+              type:'LineString',
+              coordinates:coords
+            }
+          }
+        ]
+      }
+    }
+
+    if(this.map.getLayer('RouteString')){
+      this.map.removeLayer('RouteString');
+      this.map.removeSource('RouteString');
+    }
+
+    this.map.addSource('RouteString',sourceData);
+    this.map.addLayer({
+      id:'RouteString',
+      type:'line',
+      source:'RouteString',
+      layout:{
+        'line-cap':'round',
+        'line-join':'round'
+      },
+      paint:{
+        'line-color':'red',
+        'line-width':2
+      }
     })
   }
 }
