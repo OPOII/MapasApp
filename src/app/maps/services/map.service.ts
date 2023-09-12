@@ -1,6 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { LngLatBounds, LngLatLike, Map, Marker, Popup } from 'mapbox-gl';
 import { Feature } from '../interfaces/places';
+import { DirectionsApiClient } from '../api/directionsApiClient';
+import { DirectionsResponse, Route } from '../interfaces/directions';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +11,7 @@ export class MapService {
   private map:Map|undefined;
   private markers:Marker[]=[];
 
+  private directionsApi=inject(DirectionsApiClient);
 
   constructor() { }
   get isMapReady(){
@@ -52,6 +55,31 @@ export class MapService {
     newMarkers.forEach(marker=>bounds.extend(marker.getLngLat()));
     bounds.extend(userLocation)
     this.map.fitBounds(bounds,{
+      padding:200
+    })
+  }
+
+  getRouteBetweenPoints(start:[number,number],end:[number,number]){
+    this.directionsApi.get<DirectionsResponse>(`/${start.join(',')};${end.join(',')}`)
+    .subscribe(resp=>{
+      this.drawPolyLine(resp.routes[0])
+      console.log(resp)
+    })
+  }
+
+  private drawPolyLine(route:Route){
+    console.log({km:route.distance/1000 , duration:route.duration/60} );
+
+    if(!this.map)throw Error ('El mapa no esta inicializado')
+
+    const coords=route.geometry.coordinates;
+
+    const bounds= new LngLatBounds();
+    coords.forEach(([lng,lat])=>{
+      bounds.extend([lng,lat])
+    })
+
+    this.map?.fitBounds(bounds,{
       padding:200
     })
   }

@@ -16,7 +16,7 @@ export class DirectionsApiClient extends HttpClient{
     url=this.baseUrl+url;
     return super.get<T>(url,{
       params:{
-        alternative:false,
+        alternatives:false,
         geometries:'geojson',
         language:'es',
         overview:'simplified',
